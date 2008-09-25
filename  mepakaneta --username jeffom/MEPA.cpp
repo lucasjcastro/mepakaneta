@@ -5,8 +5,8 @@ MEPA::MEPA()
 	s=0;
 	i=0;
 	//Resize?
-	M.resize(50,EMPTY);
-	D.resize(50,EMPTY);
+	M.resize(100,EMPTY);
+	D.resize(100,EMPTY);
 }
 
 void MEPA::CRCT(int cte)
@@ -248,7 +248,8 @@ void MEPA::RTPR( int k, int n )
 void MEPA::CRVI( int k, int n )
 {
     s++;
-    M[s] = M[M[D[k]+n]];
+    int a = M[M[D[k]+n]];
+    M[s] = a;
     i++;
 }
 
@@ -614,11 +615,12 @@ void MEPA::CarregaInstrucao(string path)
 			cont++;
 		}
 		_buffer.erase(0,cont);
-
+		/* Faz a leitura de um token */
 		p = _buffer.find_first_of(' ');
 		_buffer.copy(_temp,p,0);
 		_temp[p] = '\0';
 		instrucao = _temp;
+		/* Limpa o array de char */
 		ClearArray(_temp,64);
 
 		/* Verifica se é um label */
