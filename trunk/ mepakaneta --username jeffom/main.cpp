@@ -9,9 +9,9 @@
 int main(char* arg[])
 {
 	MEPA *t = new MEPA();
-	//t->Teste();
+
 	t->CarregaInstrucao(arg[0]);
-	//t->conteudo_P();
+	t->conteudo_P();
 	t->ExecutarPasso();
 
 }
