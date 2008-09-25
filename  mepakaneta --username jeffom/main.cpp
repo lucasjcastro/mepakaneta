@@ -11,5 +11,7 @@ int main()
 	MEPA *t = new MEPA();
 	//t->Teste();
 	t->CarregaInstrucao("teste.mep");
-	//t->Executar();
+	//t->conteudo_P();
+	t->Executar();
+
 }
