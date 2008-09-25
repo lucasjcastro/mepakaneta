@@ -2,11 +2,15 @@
 
 MEPA::MEPA()
 {
-	s=-1;
+	s=0;
 	i=0;
 	//Resize?
 	M.resize(50,EMPTY);
 	D.resize(50,EMPTY);
+	D[0] = 0;
+	D[1] = 5;
+	D[2] = 5;
+	D[3] = 5;
 }
 
 void MEPA::CRCT(int cte)
@@ -15,6 +19,13 @@ void MEPA::CRCT(int cte)
 	//M.push_back(cte);
 	M[s] = cte;
 	i++;
+}
+
+void MEPA::CRVL( int m, int n )
+{
+    s++;
+    M[s] = M[D[m]+n];
+    i++;
 }
 
 void MEPA::CRVL(int n)
@@ -47,7 +58,7 @@ void MEPA::MULT()
 
 void MEPA::DIVI()
 {
-	M[s-1] = (int) M[s-1]/M[s];
+	M[s-1] = M[s-1]/M[s];
 	s--;
 	i++;
 }
@@ -148,13 +159,13 @@ void MEPA::INVR()
 void MEPA::LEIT()
 {
     s++;
-    std::cin >> M[s];
+    cin >> M[s];
     i++;
 }
 
 void MEPA::IMPR()
 {
-    std::cout << M[s];
+    cout << M[s];
     s--;
     i++;
 }
@@ -207,6 +218,13 @@ void MEPA::ARMZ( int m, int n )
     M[D[m]+n] = M[s];
     s--;
     i++;
+}
+
+void MEPA::ARMZ(int n)
+{
+	M[n] = M[s];
+	s--;
+	i++;
 }
 
 void MEPA::CHPR( int L )
@@ -337,10 +355,16 @@ void MEPA::Executar()
 				stop = true;
 				break;
 			case crvl:
-				CRVL(P[i].args[0]);
+				if(P[i].args.size() > 1)
+					CRVL(P[i].args[0],P[i].args[1]);
+				else
+					CRVL(P[i].args[0]);
 				break;
 			case armz:
-				ARMZ(P[i].args[0],P[i].args[1]);
+				if(P[i].args.size() > 1)
+					ARMZ(P[i].args[0],P[i].args[1]);
+				else
+					ARMZ(P[i].args[0]);
 				break;
 			case chpr:
 				CHPR(P[i].args[0]);
@@ -363,6 +387,8 @@ void MEPA::Executar()
 			case cren:
 				CREN(P[i].args[0],P[i].args[1]);
 				break;
+			default: cout << "ERRO" << endl;
+					return;
 		}
 		Imprime();
 		system("pause");
@@ -384,8 +410,6 @@ void MEPA::CarregaInstrucao(string path)
 	instrucao,
 	_buffer;
 
-	char _temp[64];
-
 	class pilha_P
 	_tempClass;
 
@@ -406,6 +430,7 @@ void MEPA::CarregaInstrucao(string path)
 
 	while( !file.eof() )
 	{
+		char _temp[64];
 
 		cont = 0;
 		getline(file,_buffer);
@@ -419,8 +444,9 @@ void MEPA::CarregaInstrucao(string path)
 		p = _buffer.find_first_of(' ');
 		_buffer.copy(_temp,p,0);
 		_temp[p] = '\0';
-
 		instrucao = _temp;
+		cout << instrucao << endl;
+		ClearArray(_temp,64);
 
 		/* Verifica se é um label */
 		if( instrucao[0] == 'L' )
@@ -431,6 +457,7 @@ void MEPA::CarregaInstrucao(string path)
 				_tempRotulo.label = instrucao;
 				_tempRotulo.endereco = linha;
 				rotulos.push_back(_tempRotulo);
+
 			}
 		}
 		linha++;
@@ -444,9 +471,13 @@ void MEPA::CarregaInstrucao(string path)
 
 	while( !file.eof() )
 	{
+		char _temp[64];
+		_tempClass.args.resize(0);
 		cont = 0;
-		getline(file,_buffer);
+		_buffer.clear();
+		instrucao.clear();
 
+		getline(file,_buffer);
 		/* Verifica espacos em branco */
 		while(_buffer[cont] == ' ')
 		{
@@ -459,7 +490,7 @@ void MEPA::CarregaInstrucao(string path)
 		_temp[p] = '\0';
 
 		instrucao = _temp;
-		cout << instrucao << endl;
+		ClearArray(_temp,64);
 
 		/* Consome instrução do buffer */
 		_buffer.erase( 0, instrucao.size() );
@@ -485,6 +516,7 @@ void MEPA::CarregaInstrucao(string path)
 				_temp[p] = '\0';
 
 				instrucao = _temp;
+				ClearArray(_temp,64);
 				_buffer.erase( 0, instrucao.size() );
 			}
 		}
@@ -629,7 +661,12 @@ void MEPA::CarregaInstrucao(string path)
 		/* Verifica se é uma instrucao de desvio */
 		if (instrucao == "DSVS" || instrucao == "DSVF" || instrucao == "CHPR")
 		{
-			_buffer.erase(0,1);
+			cont = 0;
+			while(_buffer[cont] == ' ')
+			{
+				cont++;
+			}
+			_buffer.erase(0,cont);
 
 			proximo = _buffer[0];
 			/* Verifica se o proximo caractere é um argumento */
@@ -638,7 +675,7 @@ void MEPA::CarregaInstrucao(string path)
 				char arg[10];
 				int m = 0;
 
-				while(_buffer[m] != ' ' || _buffer[m] != ',')
+				while(_buffer[m] != ' ' && _buffer[m] != ',')
 				{
 					m++;
 				}
@@ -646,7 +683,7 @@ void MEPA::CarregaInstrucao(string path)
 				_tempClass.args.push_back( atoi(arg) );
 
 				/* Consome parte lida do buffer */
-				_buffer.erase( 0,m );
+				_buffer.erase( 0,m+1 );
 			}
 
 			/* Caso contrário é um label de destino
@@ -654,11 +691,14 @@ void MEPA::CarregaInstrucao(string path)
 			 * o endereço*/
 			else
 			{
-				p = _buffer.find_first_of(' ');
-				_buffer.copy(_temp,p,0);
-				_temp[p] = '\0';
-				_buffer.erase(0,p);
+				cont=0;
+				while( _buffer[cont] != ' ' && _buffer[cont] != '\n')
+				{
+					cont++;
+				}
 
+				ClearArray(_temp,64);
+				_buffer.copy(_temp,cont,0);
 				for( int m=0; m<rotulos.size(); m++ )
 				{
 					label _tempRotulo = rotulos[m];
@@ -674,47 +714,143 @@ void MEPA::CarregaInstrucao(string path)
 
 		else
 		{
-			_buffer.erase(0,1);
-
-			proximo = _buffer[0];
-
-			/* Verifica se o proximo caractere é um argumento */
-			if ( proximo >= '0' && proximo <= '9' )
+			if( !_buffer.empty() )
 			{
-				char arg[10];
-				int m = 0;
-
-				while(_buffer[m] != ' ' || _buffer[m] != ',')
+				cont = 0;
+				while(_buffer[cont] == ' ')
 				{
-					m++;
+					cont++;
 				}
-				_buffer.copy(arg,m,0);
-				_tempClass.args.push_back( atoi(arg) );
+				_buffer.erase(0,cont);
 
-				/* Consome parte lida do buffer */
-				_buffer.erase( 0,m );
-				}
+				proximo = _buffer[0];
 
-				/* Verifica se existe outro argumento */
-				if(  _buffer[0] == ',' )
+				/* Verifica se o proximo caractere é um argumento */
+				if ( proximo >= '0' && proximo <= '9' )
 				{
-					_buffer.erase(0,1);
-					int m = 0;
 					char arg[10];
-					while(_buffer[m] != ' ' || _buffer[m] != ',')
+					int m = 0;
+
+					while(_buffer[m] != ' ' && _buffer[m] != ',')
 					{
 						m++;
 					}
 					_buffer.copy(arg,m,0);
-					_tempClass.args.push_back( atoi(arg) );
+
+					int a = atoi(arg);
+					ClearArray(arg,10);
+					_tempClass.args.push_back( a );
 
 					/* Consome parte lida do buffer */
 					_buffer.erase( 0,m );
-				}
+					}
+
+					/* Verifica se existe outro argumento */
+					if( !_buffer.empty() )
+					{
+						if(  _buffer[0] == ',' )
+						{
+							_buffer.erase(0,1);
+							int m = 0;
+							char arg[10];
+							while(_buffer[m] != ' ' && _buffer[m] != ',')
+							{
+								m++;
+							}
+							_buffer.copy(arg,m,0);
+							int a = atoi(arg);
+							ClearArray(arg,10);
+							_tempClass.args.push_back( a );
+
+							/* Consome parte lida do buffer */
+							_buffer.erase( 0,m+1 );
+						}
+					}
+
+				}//end if
+
 			}//end else
+			P.push_back(_tempClass);
 		}//end while
-		P.push_back(_tempClass);
+		file.close();
 }//end CarregaInstrucao
+
+void MEPA::conteudo_P()
+{
+	int p = P.size();
+	int cont = 0;
+	while(cont < p)
+	{
+		if ( P[cont].comando == crct )
+			cout << "CRCT " << P[cont].args[0];
+		if ( P[cont].comando == soma )
+			cout << "SOMA";
+		if ( P[cont].comando == subt )
+			cout << "SUBT";
+		if ( P[cont].comando == mult )
+			cout <<"MULT";
+		if ( P[cont].comando == divi )
+			cout << "DIVI";
+		if ( P[cont].comando == invr )
+			cout << "INVR";
+		if ( P[cont].comando == conj )
+			cout << "CONJ";
+		if ( P[cont].comando == disj )
+			cout << "DISJ";
+		if ( P[cont].comando == cmme )
+			cout << "CMME";
+		if ( P[cont].comando == cmma )
+			cout << "CMMA";
+		if ( P[cont].comando == cmig )
+			cout << "CMIG";
+		if ( P[cont].comando == cmdg )
+			cout << "CMDG";
+		if ( P[cont].comando == cmeg )
+			cout << "CMEG";
+		if ( P[cont].comando == cmag )
+			cout << "CMAG";
+		if ( P[cont].comando == dsvs )
+			cout << "DSVS " << P[cont].args[0];
+		if ( P[cont].comando == dsvf )
+			cout << "DSVF " << P[cont].args[0] ;
+		if ( P[cont].comando == nada )
+			cout << "NADA";
+		if ( P[cont].comando == leit )
+			cout << "LEIT";
+		if ( P[cont].comando == impr )
+			cout << "IMPR";
+		if ( P[cont].comando == impl )
+			cout << "IMPL";
+		if ( P[cont].comando == impc )
+			cout << "IMPC";
+		if ( P[cont].comando == inpp )
+			cout << "INPP";
+		if ( P[cont].comando == amem )
+			cout << "AMEM " << P[cont].args[0];
+		if ( P[cont].comando == para )
+			cout << "PARA";
+		if ( P[cont].comando == crvl )
+			cout << "CRVL " << P[cont].args[0];
+		if ( P[cont].comando == armz )
+			cout << "ARMZ " << P[cont].args[0] << "," << P[cont].args[1];
+		if ( P[cont].comando == chpr )
+			cout << "CHPR " << P[cont].args[0];
+		if ( P[cont].comando == enpr )
+			cout << "ENPR " << P[cont].args[0];
+		if ( P[cont].comando == dmem )
+			cout << "DMEM " << P[cont].args[0];
+		if ( P[cont].comando == rtpr )
+			cout << "RTPR " << P[cont].args[0] << ","  << P[cont].args[1];
+		if ( P[cont].comando == crvi )
+			cout << "CRVI " << P[cont].args[0] << ","  << P[cont].args[1];
+		if ( P[cont].comando == armi )
+			cout << "ARMI " << P[cont].args[0] << ","  << P[cont].args[1];
+		if ( P[cont].comando == cren )
+			cout << "CREN " << P[cont].args[0] << ","  << P[cont].args[1];
+		cout << endl;
+		cont++;
+	}
+}
 
 void MEPA::Imprime()
 {
@@ -790,7 +926,7 @@ void MEPA::Imprime()
 
 	int cont = 0;
 
-	cout << "Conteudo de M: ";
+	cout << "Conteudo de M:";
 	while( cont < M.size() )
 	{
 		if( M[cont] != EMPTY )
@@ -799,6 +935,7 @@ void MEPA::Imprime()
 		}
 		cont++;
 	}
+	cout << "|Topo|";
 	cout << endl;
 
 	cont = 0;
@@ -812,4 +949,15 @@ void MEPA::Imprime()
 		cont++;
 	}
 	cout << endl;
+}
+
+void MEPA::ClearArray ( char a[] , int size)
+{
+	int cont = 0;
+
+	while(cont <= size)
+	{
+		a[cont] = NULL;
+		cont++;
+	}
 }

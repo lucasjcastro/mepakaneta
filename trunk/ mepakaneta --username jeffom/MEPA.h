@@ -59,8 +59,12 @@ private:
 	 *  carrega valor de M[D[m]+n] para o topo da pilha
 	 * @param  m é o nível léxico, e n o número da variável em VAR
 	 */
-	void CRVL( int );
+	void CRVL( int , int );
 
+	/**
+	 *
+	 */
+	void CRVL( int);
 	/**
 	 *  Soma o valor do topo com o valor armazenado
 	 *  uma posição abaixo e então guarda o valor
@@ -205,6 +209,8 @@ private:
 	 */
 	void ARMZ( int, int );
 
+
+	void ARMZ (int );
 	/**
 	 *  chama o procedimento cuja primeira instrução se encontra no LABEL L
 	 * @param  endereco do LABEL L
@@ -242,6 +248,7 @@ private:
 	 */
 	void CREN( int, int );
 
+	void ClearArray ( char[]  , int );
 	public:
 		MEPA();
 		~MEPA();
@@ -253,6 +260,7 @@ private:
 		void Executar();
 		void CarregaInstrucao(string);
 		void Imprime();
+		void conteudo_P();
 };
 
 
