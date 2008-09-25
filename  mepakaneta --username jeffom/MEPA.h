@@ -254,13 +254,26 @@ private:
 		~MEPA();
 		void Teste();
 		/**
+		 * Executa as instruções da pilha P
+		 *  */
+		void Executar();
+		/**
+		 * Executa as instruções da pilha P
+		 * mostrando passo a passo
+		 *  */
+		void ExecutarPasso();
+		/**
 		 * Carrega as instruçõe na pilha P
 		 *  @param string
 		 *  */
-		void Executar();
 		void CarregaInstrucao(string);
+		/**
+		 * Imprime situação atual das pilhas
+		 *  */
 		void Imprime();
+		//Teste para trace de erro
 		void conteudo_P();
+
 };
 
 

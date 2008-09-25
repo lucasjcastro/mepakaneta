@@ -6,12 +6,12 @@
  */
 #include "MEPA.h"
 
-int main()
+int main(char* arg[])
 {
 	MEPA *t = new MEPA();
 	//t->Teste();
-	t->CarregaInstrucao("teste.mep");
+	t->CarregaInstrucao(arg[0]);
 	//t->conteudo_P();
-	t->Executar();
+	t->ExecutarPasso();
 
 }

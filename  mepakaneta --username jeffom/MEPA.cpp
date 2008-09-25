@@ -7,10 +7,6 @@ MEPA::MEPA()
 	//Resize?
 	M.resize(50,EMPTY);
 	D.resize(50,EMPTY);
-	D[0] = 0;
-	D[1] = 5;
-	D[2] = 5;
-	D[3] = 5;
 }
 
 void MEPA::CRCT(int cte)
@@ -24,7 +20,8 @@ void MEPA::CRCT(int cte)
 void MEPA::CRVL( int m, int n )
 {
     s++;
-    M[s] = M[D[m]+n];
+    int a = M[D[m]+n];
+    M[s] = a;
     i++;
 }
 
@@ -165,7 +162,7 @@ void MEPA::LEIT()
 
 void MEPA::IMPR()
 {
-    cout << M[s];
+    cout << "IMPRIME: " << M[s] << endl;
     s--;
     i++;
 }
@@ -186,14 +183,13 @@ void MEPA::DSVF( int L )
         i = L;
     else
         i++;
-
     s--;
 }
 
 void MEPA::INPP()
 {
-    i = 2;
-    s--;
+    i = 1;
+    s = -1;
     D[0] = 0;
 }
 
@@ -276,7 +272,6 @@ void MEPA::Teste()
 {
 
 }
-
 void MEPA::Executar()
 {
 	bool stop = false;
@@ -390,8 +385,187 @@ void MEPA::Executar()
 			default: cout << "ERRO" << endl;
 					return;
 		}
-		Imprime();
-		system("pause");
+	}
+
+}
+
+void MEPA::ExecutarPasso()
+{
+	bool stop = false;
+	while ( !stop )
+	{
+		switch(P[i].comando)
+		{
+			case crct:
+				CRCT(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case soma:
+				SOMA();
+				Imprime();
+				system("pause");
+				break;
+			case subt:
+				SUBT();
+				Imprime();
+				system("pause");
+				break;
+			case mult:
+				MULT();
+				Imprime();
+				system("pause");
+				break;
+			case divi:
+				DIVI();
+				Imprime();
+				system("pause");
+				break;
+			case invr:
+				INVR();
+				Imprime();
+				system("pause");
+				break;
+			case conj:
+				CONJ();
+				Imprime();
+				system("pause");
+				break;
+			case disj:
+				DISJ();
+				Imprime();
+				system("pause");
+				break;
+			case nega:
+				NEGA();
+				Imprime();
+				system("pause");
+				break;
+			case cmme:
+				CMME();
+				Imprime();
+				system("pause");
+				break;
+			case cmma:
+				CMMA();
+				Imprime();
+				system("pause");
+				break;
+			case cmig:
+				CMIG();
+				Imprime();
+				system("pause");
+				break;
+			case cmdg:
+				CMDG();
+				Imprime();
+				system("pause");
+				break;
+			case cmeg:
+				CMEG();
+				Imprime();
+				system("pause");
+				break;
+			case cmag:
+				CMAG();
+				Imprime();
+				system("pause");
+				break;
+			case dsvs:
+				DSVS(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case dsvf:
+				DSVF(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case nada:
+				NADA();
+				Imprime();
+				system("pause");
+				break;
+			case leit:
+				LEIT();
+				Imprime();
+				system("pause");
+				break;
+			case impr:
+				IMPR();
+				Imprime();
+				system("pause");
+				break;
+			case inpp:
+				INPP();
+				Imprime();
+				system("pause");
+				break;
+			case amem:
+				AMEM(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case para:
+				PARA();
+				Imprime();
+				system("pause");
+				stop = true;
+				break;
+			case crvl:
+				if(P[i].args.size() > 1)
+					CRVL(P[i].args[0],P[i].args[1]);
+				else
+					CRVL(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case armz:
+				if(P[i].args.size() > 1)
+					ARMZ(P[i].args[0],P[i].args[1]);
+				else
+					ARMZ(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case chpr:
+				CHPR(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case enpr:
+				ENPR(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case dmem:
+				DMEM(P[i].args[0]);
+				Imprime();
+				system("pause");
+				break;
+			case rtpr:
+				RTPR(P[i].args[0],P[i].args[1]);
+				Imprime();
+				system("pause");
+				break;
+			case crvi:
+				CRVI(P[i].args[0],P[i].args[1]);
+				Imprime();
+				system("pause");
+				break;
+			case armi:
+				ARMI(P[i].args[0],P[i].args[1]);
+				Imprime();
+				system("pause");
+				break;
+			case cren:
+				CREN(P[i].args[0],P[i].args[1]);
+				Imprime();
+				system("pause");
+				break;
+			default: cout << "ERRO" << endl;
+					return;
+		}
 
 	}
 
@@ -445,7 +619,6 @@ void MEPA::CarregaInstrucao(string path)
 		_buffer.copy(_temp,p,0);
 		_temp[p] = '\0';
 		instrucao = _temp;
-		cout << instrucao << endl;
 		ClearArray(_temp,64);
 
 		/* Verifica se é um label */
@@ -748,9 +921,23 @@ void MEPA::CarregaInstrucao(string path)
 					/* Verifica se existe outro argumento */
 					if( !_buffer.empty() )
 					{
+						cont = 0;
+						while(_buffer[cont] == ' ')
+						{
+							cont++;
+						}
+						_buffer.erase(0,cont);
+
 						if(  _buffer[0] == ',' )
 						{
 							_buffer.erase(0,1);
+							cont = 0;
+							while(_buffer[cont] == ' ')
+							{
+								cont++;
+							}
+							_buffer.erase(0,cont);
+
 							int m = 0;
 							char arg[10];
 							while(_buffer[m] != ' ' && _buffer[m] != ',')
@@ -771,6 +958,8 @@ void MEPA::CarregaInstrucao(string path)
 
 			}//end else
 			P.push_back(_tempClass);
+			if(_tempClass.comando == para)
+				break;
 		}//end while
 		file.close();
 }//end CarregaInstrucao
@@ -830,9 +1019,19 @@ void MEPA::conteudo_P()
 		if ( P[cont].comando == para )
 			cout << "PARA";
 		if ( P[cont].comando == crvl )
-			cout << "CRVL " << P[cont].args[0];
+		{
+			if(P[cont].args.size() > 1)
+				cout << "CRVL " << P[cont].args[0] << "," << P[cont].args[1];
+			else
+				cout << "CRVL " << P[cont].args[0];
+		}
 		if ( P[cont].comando == armz )
-			cout << "ARMZ " << P[cont].args[0] << "," << P[cont].args[1];
+		{
+			if(P[cont].args.size() > 1)
+				cout << "ARMZ " << P[cont].args[0] << "," << P[cont].args[1];
+			else
+				cout << "ARMZ " << P[cont].args[0];
+		}
 		if ( P[cont].comando == chpr )
 			cout << "CHPR " << P[cont].args[0];
 		if ( P[cont].comando == enpr )
@@ -904,9 +1103,19 @@ void MEPA::Imprime()
 	if ( P[i].comando == para )
 		cout << "PARA";
 	if ( P[i].comando == crvl )
-		cout << "CRVL " << P[i].args[0];
+	{
+		if(P[i].args.size() > 1)
+			cout << "CRVL " << P[i].args[0] << "," << P[i].args[1];
+		else
+			cout << "CRVL " << P[i].args[0];
+	}
 	if ( P[i].comando == armz )
-		cout << "ARMZ " << P[i].args[0] << "," << P[i].args[1];
+	{
+		if(P[i].args.size() > 1)
+			cout << "ARMZ " << P[i].args[0] << "," << P[i].args[1];
+		else
+			cout << "ARMZ " << P[i].args[0];
+	}
 	if ( P[i].comando == chpr )
 		cout << "CHPR " << P[i].args[0];
 	if ( P[i].comando == enpr )
@@ -935,8 +1144,8 @@ void MEPA::Imprime()
 		}
 		cont++;
 	}
-	cout << "|Topo|";
 	cout << endl;
+	cout << "Valor do contador s: " << s << endl;
 
 	cont = 0;
 	cout << "Conteudo de D: ";
